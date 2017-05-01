@@ -1,0 +1,13 @@
+<div class="styled-content-box">
+    <h1 data-designmode="zoo-title" 
+        [innerHtml]="title || 'Please provide a title'"></h1>
+
+    <p  data-designmode="zoo-description" 
+        [innerHtml]="description || 'Please provide a description'"></p>
+</div>
+<div class="button-list">
+    <button class="link-button"
+            data-designmode="see-aquatic-btn"  
+            routerLink={{buttonHref}} 
+            routerLinkActive="active">{{buttonText}}</button>
+</div>
