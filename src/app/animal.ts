@@ -1,6 +1,5 @@
 export class Animal {
-  description : string;
-  title       : string;
-  filePath    : string;
-  contentKey  : string;
+  description? : string;
+  title?       : string;
+  filePath?    : string;
 }

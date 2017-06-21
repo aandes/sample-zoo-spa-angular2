@@ -1,7 +1,7 @@
 <ul class="animal-list">
 
-  <li *ngFor="let animal of animals">
-    <div attr.data-designmode="cards/{{animal.contentKey}}"
+  <li *ngFor="let animal of animals; let i = index">
+    <div attr.data-designmode="cards/animal{{i}}"
     class="animal-card animal-card-app">
     <h3 [innerHtml]="animal.title || 'Insert animal name'"></h3>
     <img src="{{animal.filePath || 'img/placeholder/img.png'}}" alt="{{animal.title}}" >
@@ -14,5 +14,5 @@
           class="link-button"
           routerLink={{link.href}}
           attr.data-designmode="links/link{{i}}"
-          routerLinkActive="active" >{{link.text}}</button>
+          routerLinkActive="active" >{{link.text || 'Insert link'}}</button>
 </div>

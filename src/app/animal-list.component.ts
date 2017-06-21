@@ -45,13 +45,13 @@ export class AnimalListComponent implements OnInit {
   refresh (): void {
 
     let that = this;
-
+    
     this.populate().then(function () {
 
       that.changeDetectorRef.detectChanges();
 
     });
-
+    
   }
 
   showAquatic(): Promise<void> {
@@ -86,8 +86,9 @@ export class AnimalListComponent implements OnInit {
 
   parseLinks(obj: any): Link[] {
     let linkArray = [];
+    let links = obj["jcr:content"].links;
 
-    Object.keys(obj["jcr:content"].links).forEach(function (key: string) {
+    links && Object.keys(obj["jcr:content"].links).forEach(function (key: string) {
 
       if (!(/^jcr:/).test(key)) {
         let link = new Link();
@@ -98,15 +99,22 @@ export class AnimalListComponent implements OnInit {
 
         linkArray.push(link);
       }
+
     });
+
+    // add dummy link
+    // can be removed if content owner
+    // is not allowed to add new links
+    linkArray.push(<Link>{});
 
     return linkArray;
   }
 
   parseAnimalCards(obj: any): Animal[] {
     let animals = [];
+    let cards = obj["jcr:content"].cards;
 
-    Object.keys(obj["jcr:content"].cards).forEach(function (key: string) {
+    cards && Object.keys(cards).forEach(function (key: string) {
 
       if (!(/^jcr:/).test(key)) {
         let animal = new Animal();
@@ -115,11 +123,16 @@ export class AnimalListComponent implements OnInit {
         animal.description = card.description;
         animal.filePath = card.image.filePath;
         animal.title = card["title"];
-        animal.contentKey = key;
 
         animals.push(animal);
       }
+
     });
+
+    // add dummy animal
+    // can be removed if content owner
+    // is not allowed to add new animals
+    animals.push(<Animal>{});
 
     return animals;
   }

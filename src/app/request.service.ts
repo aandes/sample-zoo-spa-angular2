@@ -25,12 +25,12 @@ export class RequestService {
     isAuthoringMode(): boolean {
       return document.querySelector("head script[src*='/~rapid/edit/']") !== null
         && (typeof rapidBeta === 'function')
-        && !!rapidBeta('project.data.cms.page.resourcePath');
+        && !!rapidBeta('mirror.data.cms.page.resourcePath');
     }
 
   getAquaticContent(): Promise<JSON> {
       let url = this.isAuthoringMode() ?
-        rapidBeta('project.data.cms.page.resourcePath') + '.infinity.json' :
+        rapidBeta('mirror.data.cms.page.resourcePath') + '.infinity.json' :
         this.animalsContentUrlBase + this.aquaticFileName;
      return this.http.get(url)
        .toPromise()
@@ -40,7 +40,7 @@ export class RequestService {
 
   getTerrestrialContent(): Promise<JSON> {
     let url = this.isAuthoringMode() ?
-      rapidBeta('project.data.cms.page.resourcePath') + '.infinity.json' :
+      rapidBeta('mirror.data.cms.page.resourcePath') + '.infinity.json' :
       this.animalsContentUrlBase + this.terrestrialFileName;
     return this.http.get(url)
       .toPromise()
@@ -50,7 +50,7 @@ export class RequestService {
 
   getIndexContent(): Promise<JSON> {
     let url = this.isAuthoringMode() ?
-      rapidBeta('project.data.cms.page.resourcePath') + '.infinity.json' :
+      rapidBeta('mirror.data.cms.page.resourcePath') + '.infinity.json' :
       this.animalsContentUrlBase + this.indexFileName;
     return this.http.get(url)
       .toPromise()
