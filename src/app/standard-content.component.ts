@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef  } from '@angular/core';
+import { AppComponent, AuthorableView } from './app.component';
 import { RequestService } from './request.service';
-import { AppComponent } from './app.component';
 
-declare var app:AppComponent;
+declare const app: AppComponent;
 
 @Component({
   moduleId : module.id,
@@ -12,65 +12,35 @@ declare var app:AppComponent;
   providers: [RequestService]
 })
 
+export class StandardContentComponent implements OnInit, AuthorableView {
 
-export class StandardContentComponent implements OnInit {
-    
-    title         : string;
-    description   : string;
-    buttonHref    : string;
-    buttonText    : string;
+  title: string;
+  description: string;
+  buttonHref: string;
+  buttonText: string;
 
-    constructor(private requestService : RequestService, public changeDetectorRef: ChangeDetectorRef) {}
+  constructor(
+    private requestService: RequestService,
+    public changeDetectorRef: ChangeDetectorRef
+  ) {}
 
-    ngOnInit(): void {
-    
-      app.currentView = this;
+  ngOnInit(): void {
+    app.currentView = this;
+    this.populate();
+  }
 
-      this.populate();
-
-    }
-
-    populate(): Promise<void> {
-
-      let that = this;
-
-      return this.requestService.getIndexContent()
-          .then(this.parseResponse)
-          .then(function (obj: any) {
-
-            that.title = obj["jcr:content"]["zoo-title"]["jcr:title"];
-            that.description = obj["jcr:content"]["zoo-description"].text;
-            that.buttonText = obj["jcr:content"]["see-aquatic-btn"].text;
-            that.buttonHref = obj["jcr:content"]["see-aquatic-btn"].href;
-            
-          } );
-
-    }
-
-    refresh (): void {
-
-      let that = this;
-
-      this.populate().then(function () {
-
-        that.changeDetectorRef.detectChanges();
-        
+  populate(): Promise<void> {
+    return this.requestService.getIndexContent()
+      .then((obj: any) => {
+        this.title = obj['jcr:content']['zoo-title']['jcr:title'];
+        this.description = obj['jcr:content']['zoo-description'].text;
+        this.buttonText = obj['jcr:content']['see-aquatic-btn'].text;
+        this.buttonHref = obj['jcr:content']['see-aquatic-btn'].href;
       });
+  }
 
-    }
-  
-    private parseResponse(res: JSON) {
-
-      let foo = JSON.stringify(res);
-
-      let obj = JSON.parse(foo);
-
-      return new Promise(function (fulfill) {
-
-        fulfill(obj);
-
-      });
-
-    }
+  refresh(): void {
+    this.populate().then(() => this.changeDetectorRef.detectChanges());
+  }
 
 }

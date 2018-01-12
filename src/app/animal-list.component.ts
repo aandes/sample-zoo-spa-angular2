@@ -1,154 +1,131 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { AppComponent, AuthorableView } from './app.component';
 import { RequestService } from './request.service';
-import { AppComponent } from './app.component';
 import { Animal } from './animal';
 import { Link } from './link';
 
-declare var app:AppComponent;
+declare const app: AppComponent;
 
 @Component({
   moduleId : module.id,
-  selector: 'animal-list-component',
+  selector: 'app-animal-list-component',
   templateUrl: './animal-list.component.html',
   styleUrls: ['./animal-list.component.css'],
   providers: [RequestService]
 })
 
-export class AnimalListComponent implements OnInit {
+export class AnimalListComponent implements OnInit, AuthorableView {
 
-  animals : Animal[];
-  viewTitle : string;
-  links : Link[];
+  links: Link[];
+  animals: Animal[];
+  viewTitle: string;
 
-  constructor(private requestService : RequestService, public changeDetectorRef: ChangeDetectorRef) {}
+  constructor(
+    private requestService: RequestService,
+    public changeDetectorRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-
     app.currentView = this;
-    
     this.populate();
-
   }
 
   populate(): Promise<void> {
 
-    if (window.location.href.indexOf('aquatic') != -1) {
-
+    if (location.pathname.indexOf('/aquatic') === 0) {
       return this.showAquatic();
-
     }
-    
+
     return this.showTerrestrial();
 
   }
 
   refresh (): void {
-
-    let that = this;
-    
-    this.populate().then(function () {
-
-      that.changeDetectorRef.detectChanges();
-
-    });
-    
+    this.populate().then(() => this.changeDetectorRef.detectChanges() );
   }
 
   showAquatic(): Promise<void> {
-    let that = this;
-
     return this.requestService.getAquaticContent()
-      .then(this.parseResponse)
-      .then(function (obj: any) {
-
-        that.viewTitle = obj["jcr:content"]["jcr:title"];
-
-        that.animals = that.parseAnimalCards(obj);
-        that.links = that.parseLinks(obj);
-
-      } );
+      .then(content => this.setViewProperties(content));
   }
 
   showTerrestrial(): Promise<void> {
-    let that = this;
-    
     return this.requestService.getTerrestrialContent()
-      .then(this.parseResponse)
-      .then(function (obj: any) {
-
-        that.viewTitle = obj["jcr:content"]["jcr:title"];
-
-        that.animals = that.parseAnimalCards(obj);
-        that.links = that.parseLinks(obj);
-
-      } );
+      .then(content => this.setViewProperties(content));
   }
 
-  parseLinks(obj: any): Link[] {
-    let linkArray = [];
-    let links = obj["jcr:content"].links;
+  private parseLinks(obj: any): Link[] {
 
-    links && Object.keys(obj["jcr:content"].links).forEach(function (key: string) {
+    const linkArray = [];
+    const links = obj['jcr:content'].links;
 
-      if (!(/^jcr:/).test(key)) {
-        let link = new Link();
-        let linkNode = obj["jcr:content"].links[key];
+    if (links) {
 
-        link.href = linkNode.href;
-        link.text = linkNode.text;
+      Object.keys(obj['jcr:content'].links).forEach((key: string) => {
 
-        linkArray.push(link);
-      }
+        if (!(/^jcr:/).test(key)) {
+          const link = new Link();
+          const linkNode = obj['jcr:content'].links[key];
 
-    });
+          link.href = linkNode.href;
+          link.text = linkNode.text;
 
+          linkArray.push(link);
+
+        }
+
+      });
+
+    }
+
+    // OPTIONAL
     // add dummy link
     // can be removed if content owner
     // is not allowed to add new links
     linkArray.push(<Link>{});
 
     return linkArray;
+
   }
 
   parseAnimalCards(obj: any): Animal[] {
-    let animals = [];
-    let cards = obj["jcr:content"].cards;
 
-    cards && Object.keys(cards).forEach(function (key: string) {
+    const animals = [];
+    const cards = obj['jcr:content'].cards;
 
-      if (!(/^jcr:/).test(key)) {
-        let animal = new Animal();
-        let card = obj["jcr:content"].cards[key];
+    if (cards) {
 
-        animal.description = card.description;
-        animal.filePath = card.image.filePath;
-        animal.title = card["title"];
+      Object.keys(cards).forEach((key: string) => {
 
-        animals.push(animal);
-      }
+        if (!(/^jcr:/).test(key)) {
 
-    });
+          const animal = new Animal();
+          const card = obj['jcr:content'].cards[key];
 
+          animal.description = card.description;
+          animal.filePath = card.image.filePath;
+          animal.title = card['title'];
+
+          animals.push(animal);
+        }
+
+      });
+
+    }
+
+    // OPTIONAL
     // add dummy animal
     // can be removed if content owner
     // is not allowed to add new animals
     animals.push(<Animal>{});
 
     return animals;
+
   }
 
-  private parseResponse(res: JSON) {
-
-    let foo = JSON.stringify(res);
-
-      let obj = JSON.parse(foo);
-
-      return new Promise(function (fulfill) {
-
-        fulfill(obj);
-
-      });
-
+  private setViewProperties(obj: any) {
+    this.viewTitle = obj['jcr:content']['jcr:title'];
+    this.animals = this.parseAnimalCards(obj);
+    this.links = this.parseLinks(obj);
   }
 
 }

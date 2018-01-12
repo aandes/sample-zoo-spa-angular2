@@ -7,61 +7,35 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 
 declare global {
-  
-  var rapidBeta: any;
-  
+  const rapidBeta: any;
 }
 
 @Injectable()
 export class RequestService {
 
-    private animalsContentUrlBase = 'app/data/';
-    private aquaticFileName = 'aquatic.json';
-    private terrestrialFileName = 'terrestrial.json';
-    private indexFileName = 'index.json';
+  private animalsContentUrlBase = 'app/data/';
+  private aquaticContent = 'aquatic.json';
+  private terrestrialContent = 'terrestrial.json';
+  private indexContentFile = 'index.json';
 
-    constructor(private http: Http) { }
+  constructor(private http: Http) {}
 
-    isAuthoringMode(): boolean {
-      return document.querySelector("head script[src*='/~rapid/edit/']") !== null
-        && (typeof rapidBeta === 'function')
-        && !!rapidBeta('mirror.data.cms.page.resourcePath');
-    }
-
-  getAquaticContent(): Promise<JSON> {
-      let url = this.isAuthoringMode() ?
-        rapidBeta('mirror.data.cms.page.resourcePath') + '.infinity.json' :
-        this.animalsContentUrlBase + this.aquaticFileName;
-     return this.http.get(url)
-       .toPromise()
-       .then(response => response.json() as JSON)
-       .catch(this.handleError);
+  isAuthoringMode(): boolean {
+    return document.querySelector('head script[src*="/bin/~rapid/edit."]') !== null
+      && (typeof rapidBeta === 'function')
+      && !!rapidBeta('mirror.data.cms.page.resourcePath');
   }
 
-  getTerrestrialContent(): Promise<JSON> {
-    let url = this.isAuthoringMode() ?
-      rapidBeta('mirror.data.cms.page.resourcePath') + '.infinity.json' :
-      this.animalsContentUrlBase + this.terrestrialFileName;
-    return this.http.get(url)
-      .toPromise()
-      .then(response => response.json() as JSON)
-      .catch(this.handleError);
+  getAquaticContent(): Promise<any> {
+    return this.load(this.aquaticContent);
   }
 
-  getIndexContent(): Promise<JSON> {
-    let url = this.isAuthoringMode() ?
-      rapidBeta('mirror.data.cms.page.resourcePath') + '.infinity.json' :
-      this.animalsContentUrlBase + this.indexFileName;
-    return this.http.get(url)
-      .toPromise()
-      .then(response => response.json() as JSON)
-      .catch(this.handleError);
+  getTerrestrialContent(): Promise<any> {
+    return this.load(this.terrestrialContent);
   }
 
-  private extractData(res: Response) {
-    let body = res.json();
-    console.log(body);
-    return body.data || { };
+  getIndexContent(): Promise<any> {
+    return this.load(this.indexContentFile);
   }
 
   private handleError (error: Response | any) {
@@ -77,5 +51,23 @@ export class RequestService {
     console.error(errMsg);
     return Observable.throw(errMsg);
   }
+
+  private cmsContentUrl() {
+    return this.isAuthoringMode() ?
+      rapidBeta('mirror.data.cms.page.resourcePath') + '.infinity.json' : null;
+  }
+
+  private contentUrl(page: string) {
+    return this.animalsContentUrlBase + page;
+  }
+
+  private load(staticContentPath: string): Promise<any> {
+    // in a real world, the staticContentPath might be a content service URL
+    const url = this.cmsContentUrl() || this.contentUrl(staticContentPath);
+    return this.http.get(url).toPromise()
+      .then(response => response.json())
+      .catch(this.handleError);
+  }
+
 }
 

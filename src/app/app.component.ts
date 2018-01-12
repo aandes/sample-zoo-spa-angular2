@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 
 declare global {
-  
   interface Window {
-
-      app: AppComponent
-      
+    app: AppComponent;
   }
+}
 
+export interface AuthorableView {
+    refresh(): any;
 }
 
 @Component({
@@ -16,15 +16,7 @@ declare global {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-
 export class AppComponent {
-
-    public currentView: any;
-
-    constructor() {
-
-        window.app = this;
-
-    }
-
+    public currentView: AuthorableView;
+    constructor() { window.app = this; }
 }
