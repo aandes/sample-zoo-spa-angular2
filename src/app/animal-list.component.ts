@@ -1,8 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { AppComponent, AuthorableView } from './app.component';
 import { RequestService } from './request.service';
-import { Animal } from './animal';
-import { Link } from './link';
 
 declare const app: AppComponent;
 
@@ -63,7 +61,8 @@ export class AnimalListComponent implements OnInit, AuthorableView {
       Object.keys(obj['jcr:content'].links).forEach((key: string) => {
 
         if (!(/^jcr:/).test(key)) {
-          const link = new Link();
+
+          const link = {} as Link;
           const linkNode = obj['jcr:content'].links[key];
 
           link.href = linkNode.href;
@@ -77,11 +76,13 @@ export class AnimalListComponent implements OnInit, AuthorableView {
 
     }
 
-    // OPTIONAL
-    // add dummy link
-    // can be removed if content owner
-    // is not allowed to add new links
-    linkArray.push(<Link>{});
+    if (this.requestService.isAuthoringMode()) {
+      // OPTIONAL
+      // add dummy link
+      // can be removed if content owner
+      // is not allowed to add new links
+      linkArray.push(<Link>{});
+    }
 
     return linkArray;
 
@@ -98,7 +99,7 @@ export class AnimalListComponent implements OnInit, AuthorableView {
 
         if (!(/^jcr:/).test(key)) {
 
-          const animal = new Animal();
+          const animal = {} as Animal;
           const card = obj['jcr:content'].cards[key];
 
           animal.description = card.description;
@@ -106,17 +107,20 @@ export class AnimalListComponent implements OnInit, AuthorableView {
           animal.title = card['title'];
 
           animals.push(animal);
+
         }
 
       });
 
     }
 
-    // OPTIONAL
-    // add dummy animal
-    // can be removed if content owner
-    // is not allowed to add new animals
-    animals.push(<Animal>{});
+    if (this.requestService.isAuthoringMode()) {
+      // OPTIONAL
+      // add dummy animal
+      // can be removed if content owner
+      // is not allowed to add new animals
+      animals.push(<Animal>{});
+    }
 
     return animals;
 

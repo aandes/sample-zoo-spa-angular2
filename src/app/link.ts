@@ -1,4 +1,4 @@
-export class Link {
+interface Link {
   href?: string;
   text?: string;
 }

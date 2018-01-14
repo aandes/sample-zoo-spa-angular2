@@ -9,6 +9,7 @@
       "root": "src",
       "outDir": "dist",
       "assets": [
+        "app/data",
         "assets",
         "img",
         "favicon.ico"

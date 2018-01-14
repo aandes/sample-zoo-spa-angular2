@@ -19,11 +19,11 @@
 
         "links": {
             "prev-page": {
-                "href": "./aquatic.html", 
+                "href": "/aquatic", 
                 "text": "Aquatic"
             },
             "next-page": {
-                "href": "./",
+                "href": "/",
                 "text": "Homepage"
             }
         }

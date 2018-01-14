@@ -19,11 +19,11 @@
 
         "links": {
             "prev-page": {
-                "href": "./", 
+                "href": "/", 
                 "text": "Homepage"
             },
             "next-page": {
-                "href": "./terrestrial.html",
+                "href": "/terrestrial",
                 "text": "Terrestrial"
             }
         }
