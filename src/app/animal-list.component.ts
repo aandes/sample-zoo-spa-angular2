@@ -37,7 +37,7 @@ export class AnimalListComponent implements OnInit, AuthorableView {
 
   }
 
-  refresh (): void {
+  refresh(): void {
     this.populate().then(() => this.changeDetectorRef.detectChanges() );
   }
 

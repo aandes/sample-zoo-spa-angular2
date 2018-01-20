@@ -1,10 +1,10 @@
 {
     "jcr:content": {
 
-        "jcr:title": "Zoo SPA/Handlebars (Components Rendered in APP)",
+        "jcr:title": "Zoo SPA/Angular 2 (Components Rendered in APP)",
 
         "zoo-title": {
-            "jcr:title": "Welcome to the Headless SPA/Handlebars Zoo!"
+            "jcr:title": "Welcome to the Headless SPA/Angular 2 Zoo!"
         },
 
         "zoo-description": {
