@@ -10,7 +10,6 @@ import { RequestService } from './request.service';
 import { StandardContentComponent } from './standard-content.component';
 import { AnimalListComponent } from './animal-list.component';
 
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,4 +25,4 @@ import { AnimalListComponent } from './animal-list.component';
   providers: [RequestService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

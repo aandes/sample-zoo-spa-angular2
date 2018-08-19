@@ -2,7 +2,7 @@
 
 A simple angular2 app that leverages RAPID for authoring
 
-To run this app
+## To run this app
 
 - Ensure Node.js is installed
 - Run AEM
@@ -15,9 +15,13 @@ To run this app
 - run `npm start` to start the development server
 - Navigate to `http://localhost:4200`
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0-beta.31.
+## To get started with RAPID
 
-Please 
+Check out the [RAPID getting started docs here](https://rapid.aandes.io).
+
+---
+
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0-beta.31. 
 
 ## Development server
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.

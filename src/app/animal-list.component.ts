@@ -1,8 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { AppComponent, AuthorableView } from './app.component';
 import { RequestService } from './request.service';
-
-declare const app: AppComponent;
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   moduleId : module.id,
@@ -20,35 +19,21 @@ export class AnimalListComponent implements OnInit, AuthorableView {
 
   constructor(
     private requestService: RequestService,
-    public changeDetectorRef: ChangeDetectorRef) {}
+    private changeDetectorRef: ChangeDetectorRef,
+    public activatedRoute: ActivatedRoute) {}
 
   ngOnInit(): void {
-    app.currentView = this;
+    dispatchEvent(new CustomEvent('viewinit', {detail: {view: this}}));
     this.populate();
   }
 
   populate(): Promise<void> {
-
-    if (location.pathname.indexOf('/aquatic') === 0) {
-      return this.showAquatic();
-    }
-
-    return this.showTerrestrial();
-
+    return this.requestService.getContent(this)
+      .then(content => this.setViewProperties(content));
   }
 
   refresh(): void {
     this.populate().then(() => this.changeDetectorRef.detectChanges() );
-  }
-
-  showAquatic(): Promise<void> {
-    return this.requestService.getAquaticContent()
-      .then(content => this.setViewProperties(content));
-  }
-
-  showTerrestrial(): Promise<void> {
-    return this.requestService.getTerrestrialContent()
-      .then(content => this.setViewProperties(content));
   }
 
   private parseLinks(obj: any): Link[] {
@@ -58,12 +43,12 @@ export class AnimalListComponent implements OnInit, AuthorableView {
 
     if (links) {
 
-      Object.keys(obj['jcr:content'].links).forEach((key: string) => {
+      Object.keys(links).forEach((key: string) => {
 
         if (!(/^jcr:/).test(key)) {
 
           const link = {} as Link;
-          const linkNode = obj['jcr:content'].links[key];
+          const linkNode = links[key];
 
           link.href = linkNode.href;
           link.text = linkNode.text;
@@ -100,11 +85,13 @@ export class AnimalListComponent implements OnInit, AuthorableView {
         if (!(/^jcr:/).test(key)) {
 
           const animal = {} as Animal;
-          const card = obj['jcr:content'].cards[key];
+          const card = cards[key];
 
+          animal.title = card.title;
           animal.description = card.description;
-          animal.filePath = card.image.filePath;
-          animal.title = card['title'];
+          animal.filePath = this.requestService.getCmsOrigin() +
+              card.image.filePath + (this.requestService.isAuthoringMode() ?
+                '?_' + Math.random().toString(16) : '');
 
           animals.push(animal);
 

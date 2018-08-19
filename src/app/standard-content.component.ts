@@ -1,8 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef  } from '@angular/core';
 import { AppComponent, AuthorableView } from './app.component';
 import { RequestService } from './request.service';
-
-declare const app: AppComponent;
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   moduleId : module.id,
@@ -21,16 +20,16 @@ export class StandardContentComponent implements OnInit, AuthorableView {
 
   constructor(
     private requestService: RequestService,
-    public changeDetectorRef: ChangeDetectorRef
-  ) {}
+    public changeDetectorRef: ChangeDetectorRef,
+    public activatedRoute: ActivatedRoute) {}
 
   ngOnInit(): void {
-    app.currentView = this;
+    dispatchEvent(new CustomEvent('viewinit', {detail: {view: this}}));
     this.populate();
   }
 
   populate(): Promise<void> {
-    return this.requestService.getIndexContent()
+    return this.requestService.getContent(this)
       .then((obj: any) => {
         this.title = obj['jcr:content']['zoo-title']['jcr:title'];
         this.description = obj['jcr:content']['zoo-description'].text;

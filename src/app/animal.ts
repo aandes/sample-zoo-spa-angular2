@@ -3,3 +3,5 @@ interface Animal {
   title?: string;
   filePath?: string;
 }
+
+interface Box extends Animal {};

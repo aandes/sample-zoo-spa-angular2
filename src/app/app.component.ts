@@ -1,12 +1,8 @@
 import { Component } from '@angular/core';
-
-declare global {
-  interface Window {
-    app: AppComponent;
-  }
-}
+import { ActivatedRoute } from '@angular/router';
 
 export interface AuthorableView {
+    activatedRoute: ActivatedRoute;
     refresh(): any;
 }
 
@@ -17,6 +13,23 @@ export interface AuthorableView {
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-    public currentView: AuthorableView;
-    constructor() { window.app = this; }
+
+  private currentView: AuthorableView|null = null;
+
+  constructor() {
+
+    // dispatched by our Angular view components on init
+    addEventListener('viewinit', (e: CustomEvent) =>
+      this.currentView = e.detail.view, false);
+
+    // dispached from our CMS components after edit
+    addEventListener('cmscomponentchange', (e: Event) => {
+        e.preventDefault(); // do not reload the page
+        if (this.currentView) {
+          this.currentView.refresh(); // rather refresh this view
+        }
+    }, false);
+
+  }
+
 }

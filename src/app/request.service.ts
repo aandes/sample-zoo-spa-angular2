@@ -5,37 +5,32 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
+import { AuthorableView } from './app.component';
 
 declare global {
-  const rapidBeta: any;
+  const rapid: any;
 }
 
 @Injectable()
 export class RequestService {
 
-  private animalsContentUrlBase = 'app/data/';
-  private aquaticContent = 'aquatic.json';
-  private terrestrialContent = 'terrestrial.json';
-  private indexContentFile = 'index.json';
+  // todo, load from config file
+  private cmsOrigin = 'http://localhost:4502';
+  private cmsContentPath = '/content/sample-zoo-spa-angular2/${path}.infinity.json';
 
   constructor(private http: Http) {}
 
   isAuthoringMode(): boolean {
-    return document.querySelector('head script[src*="/bin/~rapid/edit."]') !== null
-      && (typeof rapidBeta === 'function')
-      && !!rapidBeta('mirror.data.cms.page.resourcePath');
+    return typeof rapid !== 'undefined' &&
+      rapid.mirror().isAuthoringEnabled();
   }
 
-  getAquaticContent(): Promise<any> {
-    return this.load(this.aquaticContent);
+  getCmsOrigin() {
+    return this.cmsOrigin;
   }
 
-  getTerrestrialContent(): Promise<any> {
-    return this.load(this.terrestrialContent);
-  }
-
-  getIndexContent(): Promise<any> {
-    return this.load(this.indexContentFile);
+  getContent(view: AuthorableView): Promise<any> {
+    return this.load(view.activatedRoute.snapshot.url.toString());
   }
 
   private handleError (error: Response | any) {
@@ -52,19 +47,17 @@ export class RequestService {
     return Observable.throw(errMsg);
   }
 
-  private cmsContentUrl() {
-    return this.isAuthoringMode() ?
-      rapidBeta('mirror.data.cms.page.resourcePath') + '.infinity.json' : null;
-  }
-
   private contentUrl(page: string) {
-    return this.animalsContentUrlBase + page;
+    return this.cmsOrigin +
+      this.cmsContentPath.replace(/\$\{path\}/, page);
   }
 
-  private load(staticContentPath: string): Promise<any> {
+  private load(page: string): Promise<any> {
     // in a real world, the staticContentPath might be a content service URL
-    const url = this.cmsContentUrl() || this.contentUrl(staticContentPath);
-    return this.http.get(url).toPromise()
+    const url = this.contentUrl(page);
+    return this.http.get(url,
+        // withCredentials is not necessary for cms publish intances
+        {withCredentials: true}).toPromise()
       .then(response => response.json())
       .catch(this.handleError);
   }
